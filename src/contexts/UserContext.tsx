@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, createContext, useState, useEffect } from "react";
+import { ReactNode, createContext, useState } from "react";
 
 interface UserProviderProps {
   children: ReactNode;
@@ -14,14 +14,7 @@ type UserContextData = {
 export const UserContext = createContext({} as UserContextData);
 
 function UserProvider({ children }: UserProviderProps) {
-  const [userType, setUserType] = useState<string | null>(() => {
-    const storedUserType = localStorage.getItem("userType");
-    return storedUserType ? storedUserType : null;
-  });
-
-  useEffect(() => {
-    localStorage.setItem("userType", userType || "");
-  }, [userType]);
+  const [userType, setUserType] = useState<string | null>(null);
 
   return (
     <UserContext.Provider value={{ userType, setUserType }}>
