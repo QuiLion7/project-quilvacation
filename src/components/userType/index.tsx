@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserIDProps } from "@/lib/auth";
 import { db } from "@/lib/firebase";
-import { UserContext } from "@/app/contexts/UserContext";
+import { UserContext } from "@/contexts/UserContext";
 
 const UserType = () => {
   const { data } = useSession();
@@ -36,8 +36,13 @@ const UserType = () => {
 
       try {
         const userDoc = await getDoc(userRef);
-        if (userDoc.exists() && !userDoc.data().userType) {
-          setIsDialogOpen(true);
+        if (userDoc.exists()) {
+          const userTypeFromDB = userDoc.data().userType;
+          if (userTypeFromDB) {
+            setUserType(userTypeFromDB);
+          } else {
+            setIsDialogOpen(true);
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -46,7 +51,7 @@ const UserType = () => {
     if (userID) {
       fetchData();
     }
-  }, [userID]);
+  }, [userID, setUserType]);
 
   const handleUserTypeChoice = async (userType: string) => {
     setUserType(userType);
