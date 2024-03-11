@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { getDoc, updateDoc, doc } from "firebase/firestore";
 import {
@@ -15,11 +15,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UserIDProps } from "@/lib/auth";
 import { db } from "@/lib/firebase";
+import { UserContext } from "@/app/contexts/UserContext";
 
 const UserType = () => {
-  const { status, data } = useSession();
+  const { data } = useSession();
   const user: UserIDProps | undefined = data?.user;
   const userID = user?.id;
+
+  const { setUserType } = useContext(UserContext);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -46,6 +49,7 @@ const UserType = () => {
   }, [userID]);
 
   const handleUserTypeChoice = async (userType: string) => {
+    setUserType(userType);
     setIsDialogOpen(false);
     if (!userID) {
       console.error("User ID not found.");
