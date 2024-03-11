@@ -28,7 +28,7 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import { useContext } from "react";
 import UserType from "../userType";
-import { UserContext } from "@/app/contexts/UserContext";
+import { UserContext } from "@/contexts/UserContext";
 
 const Header = () => {
   const { status, data } = useSession();
