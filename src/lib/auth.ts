@@ -10,6 +10,7 @@ export interface UserIDProps {
   name?: string | null | undefined;
   email?: string | null | undefined;
   image?: string | null | undefined;
+  userType?: string | null | undefined;
 }
 
 async function createUserInFirebaseAuth(user: UserIDProps) {
