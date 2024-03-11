@@ -6,18 +6,18 @@ import { Adapter } from "next-auth/adapters";
 import { auth } from "firebase-admin";
 
 export interface UserIDProps {
-  id?: string;
-  name?: string | null | undefined;
-  email?: string | null | undefined;
-  image?: string | null | undefined;
-  userType?: string | null | undefined;
+  id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  userType?: string | null;
 }
 
 async function createUserInFirebaseAuth(user: UserIDProps) {
   try {
     const { id, email, name, image } = user;
     await auth().createUser({
-      uid: id,
+      uid: id as string | undefined,
       email: email as string | undefined,
       displayName: name,
       photoURL: image,
@@ -46,14 +46,13 @@ export const authOptions: AuthOptions = {
   }) as Adapter,
   callbacks: {
     async session({ session, token, user }) {
-      if (user && (user as UserIDProps).id) {
+      if (user && typeof user.id === "string") {
         session.user = {
-          ...session.user,
-          id: (user as UserIDProps).id,
-          name: (user as UserIDProps).name,
-          email: (user as UserIDProps).email,
-          image: (user as UserIDProps).image,
-        } as UserIDProps;
+          id: user.id,
+          name: user.name || null,
+          email: user.email || null,
+          image: user.image || null,
+        };
 
         await createUserInFirebaseAuth(session.user);
       }
