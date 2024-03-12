@@ -1,11 +1,21 @@
-export const categories: { id: number; name: string }[] = [
-  { id: 1, name: "Accommodation" },
-  { id: 2, name: "Transportation" },
-  { id: 3, name: "Food" },
-  { id: 4, name: "Leisure Activities" },
-  { id: 5, name: "Entertainment" },
-  { id: 6, name: "Travel Guides and Tours" },
-  { id: 7, name: "Spa and Wellness Services" },
-  { id: 8, name: "Adventure and Ecotourism" },
-  { id: 9, name: "Alternative Transportation" },
+import {
+  BedDouble,
+  Car,
+  Utensils,
+  TreePalm,
+  MapPinned,
+  Drama,
+  Turtle,
+  Bike,
+} from "lucide-react";
+
+export const categories = [
+  { id: 1, name: "Accommodation", icon: BedDouble },
+  { id: 2, name: "Transportation", icon: Car },
+  { id: 3, name: "Good Food", icon: Utensils },
+  { id: 4, name: "Entertainment", icon: Drama },
+  // { id: 5, name: "Leisure Activities", icon: TreePalm },
+  // { id: 6, name: "Travel Guides and Tours", icon: MapPinned },
+  // { id: 7, name: "Adventure and Ecotourism", icon: Turtle },
+  // { id: 8, name: "Alternative Transportation", icon: Bike },
 ];
