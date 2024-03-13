@@ -27,21 +27,40 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { establishmentTypes, services } from "@/constants";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, FileUp, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { Calendar } from "../ui/calendar";
-
+import { useSession } from "next-auth/react";
+import { UserIDProps } from "@/lib/auth";
+import { v4 as uuidV4 } from "uuid";
+import { storage } from "@/lib/firebase";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 type IBGEUFResponse = {
   sigla: string;
   nome: string;
 };
+
 type IBGECITYResponse = {
   id: number;
   nome: string;
 };
+
+interface ImageItemProps {
+  uid: string;
+  name: string;
+  previewUrl: string;
+  url: string;
+}
 
 const profileFormSchema = z.object({
   establishmentType: z
@@ -57,6 +76,7 @@ const profileFormSchema = z.object({
     .refine((value) => value.some((item) => item), {
       message: "You have to select at least one service.",
     }),
+  photos: z.array(z.string()),
   description: z.string().max(200, { message: "Maximum 200 characters" }),
   dateRange: z.object({
     from: z.date(),
@@ -73,6 +93,10 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export default function FormAccommodation({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const pathname = usePathname();
+  const parts = pathname.split("/");
+  const afterCreate = parts[2];
+
   const [ufs, setUfs] = useState<IBGEUFResponse[]>([]);
   const [cities, setCities] = useState<IBGECITYResponse[]>([]);
   const [selectedUf, setSelectedUf] = useState("0");
@@ -83,6 +107,14 @@ export default function FormAccommodation({
     to: addDays(new Date(2024, 0, 20), 20),
   });
 
+  const { data } = useSession();
+  const user: UserIDProps | undefined = data?.user;
+  const userID = user?.id;
+
+  const [establishmentImage, setEstablishmentImage] = useState<
+    ImageItemProps[]
+  >([]);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -90,6 +122,7 @@ export default function FormAccommodation({
       establishmentName: "",
       price: "",
       servicesIncluded: [],
+      photos: [],
       description: "",
       dateRange: {
         from: new Date(),
@@ -138,7 +171,6 @@ export default function FormAccommodation({
   }, [selectedUf]);
 
   function handleSelectUf(value: string) {
-    console.log(value);
     setSelectedUf(value);
     setSelectedCity("0");
   }
@@ -148,8 +180,66 @@ export default function FormAccommodation({
     form.setValue("city", value);
   }
 
+  async function handleFile(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files[0]) {
+      const image = e.target.files[0];
+
+      if (image.type === "image/jpeg" || image.type === "image/png") {
+        await handleUpload(image);
+      } else {
+        alert("Upload a jpeg or png image!");
+        return;
+      }
+    }
+  }
+
+  async function handleUpload(image: File) {
+    if (!userID) {
+      console.error("User ID not found.");
+      return;
+    }
+
+    try {
+      const uuidImage = uuidV4();
+      const uploadRef = ref(
+        storage,
+        `images/${afterCreate}/${userID}/${uuidImage}`
+      );
+
+      const snapshot = await uploadBytes(uploadRef, image);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const imageItem = {
+        name: uuidImage,
+        uid: userID,
+        previewUrl: URL.createObjectURL(image),
+        url: downloadURL,
+      };
+
+      setEstablishmentImage((images) => [...images, imageItem]);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    }
+  }
+
+  async function handleDeleteImage(photo: ImageItemProps) {
+    const imagePath = `images/${afterCreate}/${photo.uid}/${photo.name}`;
+
+    const imageRef = ref(storage, imagePath);
+
+    try {
+      await deleteObject(imageRef);
+      setEstablishmentImage(
+        establishmentImage.filter((image) => image.url !== photo.url)
+      );
+    } catch (error) {
+      console.error("Error delete image:", error);
+    }
+  }
+
   function onSubmit(data: ProfileFormValues) {
     console.log(data);
+    setEstablishmentImage([]);
     form.reset();
   }
 
@@ -262,6 +352,63 @@ export default function FormAccommodation({
                     </FormLabel>
                   </div>
                 ))}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="photos"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Photos</FormLabel>
+                <FormControl>
+                  <div className="w-full p-3 rounded-xl flex flex-col sm:flex-row justify-center items-center gap-2">
+                    <div className="w-48 rounded-xl flex items-center gap-2">
+                      <Button className="bg-secondary w-48 h-32 rounded-xl flex justify-center items-center border-2 border-primary hover:bg-secondary ">
+                        <FileUp className="text-primary w-18 h-18 absolute cursor-pointer" />
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className="opacity-0 cursor-pointer w-full h-full"
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              const files = Array.from(e.target.files);
+                              const imageUrls = files.map((file) =>
+                                URL.createObjectURL(file)
+                              );
+                              field.onChange(imageUrls);
+                              handleFile(e);
+                            }
+                          }}
+                        />
+                      </Button>
+                    </div>
+                    <div className="w-full h-auto flex flex-col sm:flex-row justify-center items-center gap-2">
+                      {establishmentImage.map((photo) => (
+                        <div
+                          key={photo.name}
+                          className="w-full h-32 flex items-center justify-center relative border-2 border-primary rounded-xl"
+                        >
+                          <Button
+                            className="absolute bg-transparent hover:bg-primary/10 duration-300 w-full h-32 flex justify-center items-center"
+                            onClick={() => handleDeleteImage(photo)}
+                          >
+                            <Trash2 className="text-primary bg-secondary p-1 rounded-xl w-[30px] h-auto cursor-pointer hover:scale-110 duration-300" />
+                          </Button>
+                          <Image
+                            src={photo.previewUrl}
+                            alt={photo.name}
+                            width={0}
+                            height={0}
+                            className="rounded-xl w-full h-32 object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
