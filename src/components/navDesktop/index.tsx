@@ -56,10 +56,10 @@ const NavDesktop = () => {
         )}
 
         <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-          <Link href="about">About</Link>
+          <Link href="/about">About</Link>
         </li>
         <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-          <Link href="contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </li>
 
         {status === "unauthenticated" && (
