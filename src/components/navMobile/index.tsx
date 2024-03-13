@@ -144,17 +144,7 @@ const NavMobile = () => {
                     </Link>
                   </SheetClose>
 
-                  <SheetClose asChild>
-                    <Link href="/manage">
-                      <Button
-                        variant="default"
-                        className="w-full justify-start gap-2"
-                      >
-                        <FileCog size={16} />
-                        Manage Offers
-                      </Button>
-                    </Link>
-                  </SheetClose>
+                
                 </div>
               )}
 
