@@ -1,5 +1,5 @@
-import NavMobile from "./components/mobile";
-import NavDesktop from "./components/desktop";
+import NavDesktop from "../navDesktop";
+import NavMobile from "../navMobile";
 
 const Header = () => {
   return (
