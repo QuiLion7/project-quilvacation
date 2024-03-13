@@ -8,5 +8,6 @@ export default async function CreateOffer() {
   if (!session || !session.user) {
     redirect("/");
   }
+  
   return <main className="p-2">Criar Ofertas</main>;
 }
