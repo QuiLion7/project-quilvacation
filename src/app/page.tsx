@@ -9,11 +9,11 @@ export default function Home() {
             holidays <br />
             await you
           </h1>
-          <ul className="absolute bottom-[-80px] sm:bottom-[-45px] md:bottom-[-50px] w-full h-auto flex gap-1 md:gap-2 justify-center lg:justify-around items-center rounded-xl p-2 flex-wrap">
+          <ul className="absolute bottom-[-80px] sm:bottom-[-45px] md:bottom-[-50px] w-full h-auto flex gap-1 md:gap-2 justify-center lg:justify-evenly items-center rounded-xl p-2 flex-wrap">
             {categories.map((category) => (
               <li
                 key={category.id}
-                className="w-[140px] sm:w-[150px] md:w-[180px] lg:w-[220px] px-4 bg-secondary/80 rounded-xl flex flex-col justify-around items-center cursor-default hover:scale-105
+                className="w-[140px] sm:w-[150px] md:w-[180px] lg:w-[220px] px-4 bg-secondary/80 rounded-xl flex flex-col justify-evenly items-center cursor-default hover:scale-105
                 duration-300 hover:font-bold"
               >
                 <div className="flex-1">
