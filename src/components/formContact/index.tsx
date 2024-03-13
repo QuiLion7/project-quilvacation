@@ -14,6 +14,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 const profileFormSchema = z.object({
   name: z
@@ -42,6 +43,8 @@ const profileFormSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function FormContact() {
+  const router = useRouter();
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -52,13 +55,13 @@ export default function FormContact() {
   });
 
   function onSubmit(data: ProfileFormValues) {
-    const messageWithUserInfo = `Nome: ${data.name}\nE-mail: ${data.email}\n\nMensagem: ${data.message}`;
+    const messageWithUserInfo = `Name: ${data.name}\nEmail: ${data.email}\n\nMessage: ${data.message}`;
 
     const whatsappUrl = `https://wa.me/5588981062656?text=${encodeURIComponent(
       messageWithUserInfo
     )}`;
 
-    window.open(whatsappUrl, "_blank");
+    router.push(whatsappUrl);
 
     form.reset();
   }
