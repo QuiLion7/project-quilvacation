@@ -8,11 +8,15 @@ import { UserContext } from "@/contexts/UserContext";
 import { HoverCard } from "@radix-ui/react-hover-card";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useContext } from "react";
 
 const NavDesktop = () => {
   const { status, data } = useSession();
   const { userType } = useContext(UserContext);
+  const pathname = usePathname();
+  const parts = pathname.split("/");
+  const beforePathName = parts[1];
 
   return (
     <div className="flex w-full max-w-7xl h-[56px] p-2 items-center justify-center">
@@ -30,49 +34,121 @@ const NavDesktop = () => {
         </h1>
       </Link>
 
-      <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
-        <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-          <Link href="/">Home</Link>
-        </li>
-        {status === "authenticated" && userType === "client" && (
-          <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
+      {status === "authenticated" && userType === "client" && (
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
+          <li
+            className={`${
+              pathname === "/"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/">Home</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/offers"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
             <Link href="/offers">Offers</Link>
           </li>
-        )}
-        {status === "authenticated" && userType === "client" && (
-          <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
+          <li
+            className={`${
+              pathname === "/vacation"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
             <Link href="/vacation">Vacation</Link>
           </li>
-        )}
-        {status === "authenticated" && userType === "advertiser" && (
-          <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
+          <li
+            className={`${
+              beforePathName === "profile"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/profile">Profile</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/about"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/about">About</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/contact"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/contact">Contact</Link>
+          </li>
+        </ul>
+      )}
+
+      {status === "authenticated" && userType === "advertiser" && (
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
+          <li
+            className={`${
+              pathname === "/"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/">Home</Link>
+          </li>
+          <li
+            className={`${
+              beforePathName === "create"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
             <Link href="/create">Create</Link>
           </li>
-        )}
-        {status === "authenticated" && userType === "advertiser" && (
-          <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-            <Link href="/manage">Manage</Link>
-          </li>
-        )}
-
-        <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-          <Link href="/about">About</Link>
-        </li>
-        <li className="hover:bg-primary hover:text-secondary p-2 rounded-lg">
-          <Link href="/contact">Contact</Link>
-        </li>
-
-        {status === "unauthenticated" && (
-          <Button
-            onClick={() => signIn()}
-            variant="default"
-            className="w-full justify-start uppercase"
+          <li
+            className={`${
+              pathname === "/offers"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
           >
-            Login
-          </Button>
-        )}
-
-        {status === "authenticated" && data?.user && (
+            <Link href="/offers">Offers</Link>
+          </li>
+          <li
+            className={`${
+              beforePathName === "profile"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/profile">Profile</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/about"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/about">About</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/contact"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/contact">Contact</Link>
+          </li>
           <HoverCard>
             <HoverCardTrigger>
               <Avatar
@@ -90,8 +166,47 @@ const NavDesktop = () => {
               Logout
             </HoverCardContent>
           </HoverCard>
-        )}
-      </ul>
+        </ul>
+      )}
+
+      {status === "unauthenticated" && (
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
+          <li
+            className={`${
+              pathname === "/"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/">Home</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/about"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/about">About</Link>
+          </li>
+          <li
+            className={`${
+              pathname === "/contact"
+                ? "bg-primary text-secondary p-2 rounded-lg hover:bg-secondary hover:text-primary duration-300 font-bold"
+                : "hover:bg-primary hover:text-secondary p-2 rounded-lg duration-300"
+            }`}
+          >
+            <Link href="/contact">Contact</Link>
+          </li>
+          <Button
+            onClick={() => signIn()}
+            variant="destructive"
+            className="w-full justify-start uppercase"
+          >
+            Login
+          </Button>
+        </ul>
+      )}
     </div>
   );
 };

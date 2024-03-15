@@ -76,18 +76,56 @@ const NavMobile = () => {
 
             <div className="mt-4 flex flex-col gap-2">
               {status === "unauthenticated" && (
-                <Button
-                  onClick={() => signIn()}
-                  variant="default"
-                  className="w-full justify-start gap-2"
-                >
-                  <LogInIcon size={16} />
-                  Fazer Login
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <SheetClose asChild>
+                    <Link href="/">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <Wallet size={16} />
+                        Home
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link href="/about">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <NotebookPen size={16} />
+                        About
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link href="/contact">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <PhoneCall size={16} />
+                        Contact
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
+                  <Button
+                    onClick={() => signIn()}
+                    variant="default"
+                    className="w-full justify-start gap-2"
+                  >
+                    <LogInIcon size={16} />
+                    Login
+                  </Button>
+                </div>
               )}
 
-              {status === "authenticated" && data?.user && (
-                <div className="flex flex-col">
+              {status === "authenticated" && userType === "client" && (
+                <div className="flex flex-col gap-2">
                   <SheetClose asChild>
                     <Link href="/">
                       <Button
@@ -99,11 +137,7 @@ const NavMobile = () => {
                       </Button>
                     </Link>
                   </SheetClose>
-                </div>
-              )}
 
-              {status === "authenticated" && userType === "client" && (
-                <div className="flex flex-col gap-2">
                   <SheetClose asChild>
                     <Link href="/offers">
                       <Button
@@ -127,11 +161,59 @@ const NavMobile = () => {
                       </Button>
                     </Link>
                   </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link href="/profile">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <User size={16} />
+                        Profile
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link href="/about">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <NotebookPen size={16} />
+                        About
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link href="/contact">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <PhoneCall size={16} />
+                        Contact
+                      </Button>
+                    </Link>
+                  </SheetClose>
                 </div>
               )}
 
               {status === "authenticated" && userType === "advertiser" && (
                 <div className="flex flex-col gap-2">
+                  <SheetClose asChild>
+                    <Link href="/">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <Home size={16} />
+                        Home
+                      </Button>
+                    </Link>
+                  </SheetClose>
+
                   <SheetClose asChild>
                     <Link href="/create">
                       <Button
@@ -144,12 +226,18 @@ const NavMobile = () => {
                     </Link>
                   </SheetClose>
 
-                
-                </div>
-              )}
+                  <SheetClose asChild>
+                    <Link href="/offers">
+                      <Button
+                        variant="default"
+                        className="w-full justify-start gap-2"
+                      >
+                        <CircleDollarSign size={16} />
+                        Explore Offers
+                      </Button>
+                    </Link>
+                  </SheetClose>
 
-              {status === "authenticated" && data?.user && (
-                <div className="flex flex-col gap-2">
                   <SheetClose asChild>
                     <Link href="/profile">
                       <Button
