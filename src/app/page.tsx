@@ -1,9 +1,10 @@
+import { ShowItems } from "@/components/showItems";
 import { categories } from "@/constants";
 
 export default function Home() {
   return (
     <main className="p-2 max-w-7xl w-full flex flex-col justify-center items-center gap-2">
-      <div className="w-full flex justify-center items-center bg-[url('/card2.jpg')] bg-cover bg-no-repeat bg-center bg-origin-border h-[350px] md:h-[500px] rounded-xl mb-40">
+      <div className="w-full flex justify-center items-center bg-[url('/card2.jpg')] bg-cover bg-no-repeat bg-center bg-origin-border h-[350px] md:h-[500px] rounded-xl mb-24">
         <div className="relative flex flex-col justify-center items-center bg-primary/20 hover:bg-primary/0 duration-300 w-full h-full rounded-xl">
           <h1 className="font-bold text-center text-xl sm:text-3xl md:text-4xl lg:text-5xl uppercase p-2 bg-secondary/80 hover:scale-110 duration-500 rounded-xl tracking-wide cursor-default">
             holidays <br />
@@ -27,7 +28,12 @@ export default function Home() {
           </ul>
         </div>
       </div>
-      <div className="">cards</div>
+      <div className="flex h-full w-full flex-col items-center justify-center ">
+        <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
+          Most accessed
+        </h1>
+        <ShowItems />
+      </div>
     </main>
   );
 }
