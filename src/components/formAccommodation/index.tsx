@@ -36,7 +36,8 @@ import { Calendar } from "../ui/calendar";
 import { useSession } from "next-auth/react";
 import { UserIDProps } from "@/lib/auth";
 import { v4 as uuidV4 } from "uuid";
-import { storage } from "@/lib/firebase";
+import { storage, db } from "@/lib/firebase";
+import { addDoc, collection } from "firebase/firestore";
 import {
   ref,
   uploadBytes,
@@ -45,6 +46,9 @@ import {
 } from "firebase/storage";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 type IBGEUFResponse = {
   sigla: string;
   nome: string;
@@ -76,8 +80,10 @@ const profileFormSchema = z.object({
     .refine((value) => value.some((item) => item), {
       message: "You have to select at least one service.",
     }),
-  photos: z.array(z.string()),
-  description: z.string().max(200, { message: "Maximum 200 characters" }),
+  photos: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one service.",
+  }),
+  description: z.string().max(300, { message: "Maximum 300 characters" }),
   dateRange: z.object({
     from: z.date(),
     to: z.date(),
@@ -95,7 +101,7 @@ export default function FormAccommodation({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const pathname = usePathname();
   const parts = pathname.split("/");
-  const afterCreate = parts[2];
+  const afterPathName = parts[2];
 
   const [ufs, setUfs] = useState<IBGEUFResponse[]>([]);
   const [cities, setCities] = useState<IBGECITYResponse[]>([]);
@@ -187,7 +193,7 @@ export default function FormAccommodation({
       if (image.type === "image/jpeg" || image.type === "image/png") {
         await handleUpload(image);
       } else {
-        alert("Upload a jpeg or png image!");
+        toast.warning("Upload a jpeg or png image!");
         return;
       }
     }
@@ -201,10 +207,7 @@ export default function FormAccommodation({
 
     try {
       const uuidImage = uuidV4();
-      const uploadRef = ref(
-        storage,
-        `images/${afterCreate}/${userID}/${uuidImage}`
-      );
+      const uploadRef = ref(storage, `images/${userID}/${uuidImage}`);
 
       const snapshot = await uploadBytes(uploadRef, image);
       const downloadURL = await getDownloadURL(snapshot.ref);
@@ -217,14 +220,15 @@ export default function FormAccommodation({
       };
 
       setEstablishmentImage((images) => [...images, imageItem]);
+      toast.success("Image Added");
     } catch (error) {
       console.error("Error uploading image:", error);
+      toast.error("Error uploading image");
     }
   }
 
   async function handleDeleteImage(photo: ImageItemProps) {
-    const imagePath = `images/${afterCreate}/${photo.uid}/${photo.name}`;
-
+    const imagePath = `images/${photo.uid}/${photo.name}`;
     const imageRef = ref(storage, imagePath);
 
     try {
@@ -232,15 +236,48 @@ export default function FormAccommodation({
       setEstablishmentImage(
         establishmentImage.filter((image) => image.url !== photo.url)
       );
+      toast.success("Deleted Image");
     } catch (error) {
       console.error("Error delete image:", error);
+      toast.error("Error delete image");
     }
   }
 
   function onSubmit(data: ProfileFormValues) {
-    console.log(data);
-    setEstablishmentImage([]);
-    form.reset();
+    const establishmentListImage = establishmentImage.map((uuidImage) => {
+      return {
+        name: uuidImage.name,
+        uid: uuidImage.uid,
+        url: uuidImage.url,
+      };
+    });
+
+    try {
+      addDoc(collection(db, "manage"), {
+        establishmentName: data.establishmentName,
+        establishmentType: data.establishmentType,
+        price: data.price,
+        servicesIncluded: data.servicesIncluded,
+        description: data.description,
+        dateRange: data.dateRange,
+        state: data.state,
+        city: data.city,
+        address: data.address,
+        whatsapp: data.whatsapp,
+        created: new Date(),
+        owner: user?.name,
+        uid: userID,
+        photos: establishmentListImage,
+        createType: afterPathName,
+      });
+
+      form.reset();
+      setEstablishmentImage([]);
+      toast.success(`${afterPathName} registered successfully`);
+    } catch (error) {
+      console.log("Error add Establishment:", error);
+      toast.error("Error add Establishment");
+    }
   }
 
   return (
@@ -365,13 +402,12 @@ export default function FormAccommodation({
                 <FormLabel>Photos</FormLabel>
                 <FormControl>
                   <div className="w-full p-3 rounded-xl flex flex-col sm:flex-row justify-center items-center gap-2">
-                    <div className="w-48 rounded-xl flex items-center gap-2">
-                      <Button className="bg-secondary w-48 h-32 rounded-xl flex justify-center items-center border-2 border-primary hover:bg-secondary ">
-                        <FileUp className="text-primary w-18 h-18 absolute cursor-pointer" />
+                    <div className="w-full sm:w-48 rounded-xl flex items-center gap-2">
+                      <Button className="relative bg-secondary w-full sm:w-48 h-32 rounded-xl flex justify-center items-center border-2 border-primary hover:bg-secondary ">
                         <Input
                           type="file"
                           accept="image/*"
-                          className="opacity-0 cursor-pointer w-full h-full"
+                          className="opacity-0 w-full h-full cursor-pointer"
                           onChange={(e) => {
                             if (e.target.files) {
                               const files = Array.from(e.target.files);
@@ -383,6 +419,7 @@ export default function FormAccommodation({
                             }
                           }}
                         />
+                        <FileUp className="text-primary w-18 h-18 absolute cursor-pointer" />
                       </Button>
                     </div>
                     <div className="w-full h-auto flex flex-col sm:flex-row justify-center items-center gap-2">
@@ -604,6 +641,17 @@ export default function FormAccommodation({
           </Button>
         </form>
       </Form>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }
