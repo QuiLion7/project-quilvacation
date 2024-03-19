@@ -117,7 +117,7 @@ const NavDesktop = () => {
               </Avatar>
             </HoverCardTrigger>
             <HoverCardContent className="uppercase w-auto p-2">
-              Logout
+              click to logout
             </HoverCardContent>
           </HoverCard>
         </motion.ul>
@@ -198,8 +198,8 @@ const NavDesktop = () => {
                 {data.user.image && <AvatarImage src={data.user.image} />}
               </Avatar>
             </HoverCardTrigger>
-            <HoverCardContent className="uppercase w-auto p-2">
-              Logout
+            <HoverCardContent className="uppercase w-auto p-2 bg-primary text-secondary">
+              click to logout
             </HoverCardContent>
           </HoverCard>
         </motion.ul>
