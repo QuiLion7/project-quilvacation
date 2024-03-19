@@ -6,8 +6,17 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { format } from "date-fns";
 import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { Card, CardContent } from "../ui/card";
+import { motion } from "framer-motion";
+import { fadeIn } from "@/utils/variants";
 
 interface ListProps {
   id: string;
@@ -83,49 +92,77 @@ export function ShowItems() {
     loadList();
   }, []);
 
-  function timestampToDate(timestamp: TimestampProps) {
-    const date = new Date(timestamp.seconds * 1000);
-    return date;
-  }
-
   return (
-    <main className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-cols-auto">
-      {list.map((item) => (
-        <Link key={item.id} href={`/offers/${item.id}`}>
-          <section className="w-full flex gap-2 flex-col justify-center items-center bg-secondary rounded-xl uppercase p-2 text-xs sm:text-base">
-            <Image
-              src={item.photos[0].url}
-              alt={item.createType}
-              layout="responsive"
-              quality={100}
-              unoptimized={true}
-              width={0}
-              height={0}
-              className="w-auto rounded-lg h-full mim-h-[150px] max-h-[200px] hover:scale-[104%] duration-300 object-cover"
-            />
-            <p className="font-bold uppercase text-center">{item.createType}</p>
-            <span>
-              <strong>from: </strong>
-              {format(timestampToDate(item.dateRange.from), "MM/dd/yyyy")}
-            </span>
-            <span>
-              <strong>to: </strong>
-              {format(timestampToDate(item.dateRange.to), "MM/dd/yyyy")}
-            </span>
-            <span className="flex flex-wrap w-full gap-2 justify-center items-center">
-              <strong>State: </strong>
-              {item.state}
-            </span>
-            <span className="flex flex-wrap w-full gap-2 justify-center items-center">
-              <strong>City: </strong>
-              {item.city}
-            </span>
-            <span>
-              <strong>Price:</strong> $ {item.price}
-            </span>
-          </section>
-        </Link>
-      ))}
+    <main className=" sm:px-[50px] w-full flex justify-center items-center flex-col">
+      <motion.h1
+        variants={fadeIn("up", 0.4)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.5 }}
+        className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5 bg-blend-exclusion"
+      >
+        Most accessed
+      </motion.h1>
+      <motion.section
+        className="w-full h-full flex justify-center items-center"
+        variants={fadeIn("up", 0.2)}
+        initial="hidden"
+        whileInView={"show"}
+        viewport={{ once: false, amount: 0.4 }}
+      >
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full max-w-7xl"
+        >
+          <CarouselContent>
+            {list.map((item, index) => (
+              <Link key={index} href={`/offers/${item.id}`}>
+                <CarouselItem className="basis-1/2 sm:basis-1/3 w-full">
+                  <div className="h-full w-[300px] flex justify-center items-center">
+                    <Card className="rounded-xl bg-primary hover:bg-primary/80 duration-300 w-full h-full">
+                      <CardContent className="group flex flex-col items-center justify-start rounded-xl text-secondary p-0 h-full">
+                        <div className="flex flex-1 justify-center items-center w-full h-full rounded-xl ">
+                          <Image
+                            src={item.photos[0].url}
+                            alt={item.createType}
+                            layout="fixed"
+                            quality={100}
+                            unoptimized={true}
+                            width={0}
+                            height={0}
+                            style={{
+                              height: "200px",
+                              width: "300px",
+                              objectFit: "cover",
+                            }}
+                            className="w-full h-full object-cover overflow-hidden rounded-xl group-hover:scale-95 duration-300"
+                          />
+                        </div>
+                        <div className="flex flex-1 flex-col justify-center items-center pb-1 w-full h-full uppercase group-hover:scale-105 duration-300">
+                          <p className="font-bold uppercase text-center">
+                            {item.createType}
+                          </p>
+                          <span className="flex flex-wrap w-full gap-2 justify-center items-center">
+                            {item.city} / {item.state}
+                          </span>
+                          <span className="font-bold">
+                            Price: $ {item.price}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              </Link>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden sm:flex" />
+          <CarouselNext className="hidden sm:flex" />
+        </Carousel>
+      </motion.section>
 
       <ToastContainer
         position="bottom-right"
