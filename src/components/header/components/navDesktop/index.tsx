@@ -23,7 +23,6 @@ const NavDesktop = () => {
   return (
     <div className="flex w-full max-w-7xl h-[56px] p-2 items-center justify-center">
       {status === "authenticated" && userType === null && <UserType />}
-
       <Link
         href="/"
         className="h-[45px] w-full flex justify-start items-center"
@@ -104,6 +103,23 @@ const NavDesktop = () => {
           >
             <Link href="/contact">Contact</Link>
           </li>
+          <HoverCard>
+            <HoverCardTrigger>
+              <Avatar
+                onClick={() => signOut()}
+                className="cursor-pointer hover:scale-105 duration-700"
+              >
+                <AvatarFallback>
+                  {data.user.name?.[0].toUpperCase()}
+                </AvatarFallback>
+
+                {data.user.image && <AvatarImage src={data.user.image} />}
+              </Avatar>
+            </HoverCardTrigger>
+            <HoverCardContent className="uppercase w-auto p-2">
+              Logout
+            </HoverCardContent>
+          </HoverCard>
         </motion.ul>
       )}
 
