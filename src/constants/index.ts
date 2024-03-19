@@ -12,7 +12,7 @@ import {
 export const categories = [
   { id: 1, name: "Accommodation", icon: BedDouble, url: "accommodation" },
   { id: 2, name: "Transportation", icon: Car, url: "transportation" },
-  { id: 3, name: "Good Food", icon: Utensils, url: "food" },
+  { id: 3, name: "Food", icon: Utensils, url: "food" },
   // { id: 4, name: "Entertainment", icon: Drama, url: "entertainment" },
   // { id: 5, name: "Leisure Activities", icon: TreePalm },
   // { id: 6, name: "Travel Guides and Tours", icon: MapPinned },
