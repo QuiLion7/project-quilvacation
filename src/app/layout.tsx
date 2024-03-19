@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import { AuthProvider } from "@/providers/auth";
 import UserProvider from "@/contexts/UserContext";
 import { cn } from "@/lib/utils";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,13 +24,14 @@ export default function RootLayout({
       <body
         className={cn(
           inter.className,
-          "flex flex-col justify-center items-center"
+          "flex flex-col justify-between items-center min-h-[100vh]"
         )}
       >
         <AuthProvider>
           <UserProvider>
             <Header />
             {children}
+            <Footer />
           </UserProvider>
         </AuthProvider>
       </body>
