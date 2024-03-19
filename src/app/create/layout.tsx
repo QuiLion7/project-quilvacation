@@ -1,5 +1,3 @@
-import { HeaderCreate } from "./components/header";
-
 export default function CreateLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function CreateLayout({
 }) {
   return (
     <>
-      <HeaderCreate />
       {children}
     </>
   );
