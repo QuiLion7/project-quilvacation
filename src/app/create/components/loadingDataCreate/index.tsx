@@ -55,7 +55,7 @@ interface TimestampProps {
   nanoseconds: number;
 }
 
-export function LoadingData() {
+export function LoadingDataCreate() {
   const { data } = useSession();
   const user: UserIDProps | undefined = data?.user;
   const userID = user?.id;
@@ -135,9 +135,21 @@ export function LoadingData() {
 
   return (
     <main className="w-full flex flex-col justify-center items-center">
-      <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
-        to manage
-      </h1>
+      {list.length === 0 && (
+        <div className="w-full h-[65vh] uppercase flex flex-col justify-center items-center text-primary">
+          <h1 className="font-bold text-base sm:text-lg md:text-xl lg:text-2xl">
+            no offers registered
+          </h1>
+          <h3 className="font-bold text-xs sm:text-sm md:text-lg lg:text-xl">
+            click on any form to get started
+          </h3>
+        </div>
+      )}
+      {list.length > 0 && (
+        <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
+          to manage
+        </h1>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-auto">
         {list.map((item) => (
