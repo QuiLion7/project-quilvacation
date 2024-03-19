@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export function HeaderCreate() {
   return (
-    <nav className="w-full p-2 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 text-secondary duration-300">
+    <nav className="w-full flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 text-secondary duration-300">
       <Link
         key={0}
         href="/create"
