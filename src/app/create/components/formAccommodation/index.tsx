@@ -20,9 +20,13 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Checkbox } from "../ui/checkbox";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+} from "../../../../components/ui/select";
+import { Checkbox } from "../../../../components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../../../components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +36,7 @@ import { cn } from "@/lib/utils";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Calendar } from "../ui/calendar";
+import { Calendar } from "../../../../components/ui/calendar";
 import { useSession } from "next-auth/react";
 import { UserIDProps } from "@/lib/auth";
 import { v4 as uuidV4 } from "uuid";
@@ -67,9 +71,7 @@ interface ImageItemProps {
 }
 
 const profileFormSchema = z.object({
-  establishmentType: z
-    .string()
-    .min(1, { message: "Select the type of establishment" }),
+  type: z.string().min(1, { message: "Select the type of establishment" }),
   establishmentName: z
     .string()
     .min(3, { message: "At least 3 characters" })
@@ -99,10 +101,6 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 export default function FormAccommodation({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const pathname = usePathname();
-  const parts = pathname.split("/");
-  const afterPathName = parts[2];
-
   const [ufs, setUfs] = useState<IBGEUFResponse[]>([]);
   const [cities, setCities] = useState<IBGECITYResponse[]>([]);
   const [selectedUf, setSelectedUf] = useState("0");
@@ -124,7 +122,7 @@ export default function FormAccommodation({
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      establishmentType: "",
+      type: "",
       establishmentName: "",
       price: "",
       servicesIncluded: [],
@@ -255,7 +253,7 @@ export default function FormAccommodation({
     try {
       addDoc(collection(db, "manage"), {
         establishmentName: data.establishmentName,
-        establishmentType: data.establishmentType,
+        type: data.type,
         price: data.price,
         servicesIncluded: data.servicesIncluded,
         description: data.description,
@@ -268,12 +266,12 @@ export default function FormAccommodation({
         owner: user?.name,
         uid: userID,
         photos: establishmentListImage,
-        createType: afterPathName,
+        createType: "accommodation",
       });
 
       form.reset();
       setEstablishmentImage([]);
-      toast.success(`${afterPathName} registered successfully`);
+      toast.success(`Accommodation registered successfully`);
     } catch (error) {
       console.log("Error add Establishment:", error);
       toast.error("Error add Establishment");
@@ -281,7 +279,10 @@ export default function FormAccommodation({
   }
 
   return (
-    <div className="flex h-full w-full max-w-[800px] items-center justify-center">
+    <div className="flex flex-col gap-2 h-full w-full max-w-2xl items-center justify-center">
+      <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
+        Form Accommodation
+      </h1>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -289,7 +290,7 @@ export default function FormAccommodation({
         >
           <FormField
             control={form.control}
-            name="establishmentType"
+            name="type"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Type</FormLabel>
