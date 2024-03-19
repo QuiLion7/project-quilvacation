@@ -8,5 +8,11 @@ export default async function Profile() {
   if (!session || !session.user) {
     redirect("/");
   }
-  return <main className="p-2">Perfil do Usuário</main>;
+  return (
+    <main className="mt-[57px] p-2 max-w-7xl">
+      <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
+        user profile under construction
+      </h1>
+    </main>
+  );
 }
