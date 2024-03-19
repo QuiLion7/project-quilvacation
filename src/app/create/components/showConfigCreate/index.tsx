@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { categories } from "@/constants";
-import { FileCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LoadingData } from "../loadingData";
+import { LoadingDataCreate } from "../loadingDataCreate";
 import FormAccommodation from "../formAccommodation";
 import FormTransportation from "../formTransportation";
 
-export function ShowConfig() {
+export function ShowConfigCreate() {
   const [selectedShow, setSelectedShow] = useState("manage");
 
   const handleSelectedClick = (select: string) => {
@@ -19,29 +18,34 @@ export function ShowConfig() {
       <nav className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center justify-center gap-2 text-secondary duration-300">
         <Button
           key={0}
-          className="flex-1 flex justify-center items-center gap-2 w-full hover:font-bold"
+          className={`${
+            selectedShow === "manage"
+              ? "flex-1 flex justify-center items-center gap-2 w-full shadow-lg shadow-indigo-600"
+              : "flex-1 flex justify-center items-center gap-2 w-full"
+          }`}
           onClick={() => handleSelectedClick("manage")}
         >
-          <FileCog className="h-auto w-4 md:w-5" />
-          <p className="text-xs md:text-base">Manage</p>
+          <p className="text-xs md:text-base">Manage Offers</p>
         </Button>
         {categories.map((category) => (
           <Button
             key={category.id}
-            className="flex-1 w-full hover:font-bold"
+            className={`${
+              selectedShow === category.name
+                ? "flex-1 w-full hover:font-bold shadow-lg shadow-indigo-600"
+                : "flex-1 w-full duration-300"
+            }`}
             onClick={() => handleSelectedClick(category.name)}
           >
-            <p className="text-xs md:text-base">{category.name}</p>
+            <p className="text-xs md:text-base">Form {category.name}</p>
           </Button>
         ))}
       </nav>
-      <div
-        className="w-full flex justify-center items-center py-2"
-      >
-        {selectedShow === "manage" && <LoadingData />}
+      <div className="w-full flex justify-center items-center py-2">
+        {selectedShow === "manage" && <LoadingDataCreate />}
         {selectedShow === "Accommodation" && <FormAccommodation />}
         {selectedShow === "Transportation" && <FormTransportation />}
-        {selectedShow === "Good Food" && (
+        {selectedShow === "Food" && (
           <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
             under construction
           </h1>
