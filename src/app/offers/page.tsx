@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { ShowOffers } from "./components/showOffers";
 
 export default async function ExploreOffers() {
   const session = await getServerSession(authOptions);
@@ -8,5 +9,9 @@ export default async function ExploreOffers() {
   if (!session || !session.user) {
     redirect("/");
   }
-  return <main className="p-2">Explorar Ofertas</main>;
+  return (
+    <main className="mt-[57px] max-w-7xl flex h-full w-full flex-col items-center justify-center p-2">
+      <ShowOffers />
+    </main>
+  );
 }
