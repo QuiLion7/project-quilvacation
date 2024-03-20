@@ -93,7 +93,7 @@ export function LoadingDataVacation() {
   const [showListVacation, setShowListVacation] = useState<ManageItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const documentPrint: RefObject<HTMLDivElement> = useRef(null);
+  const componentRef: RefObject<HTMLDivElement> = useRef(null);
 
   useEffect(() => {
     const loadListVacation = async () => {
@@ -170,7 +170,7 @@ export function LoadingDataVacation() {
 
   const handlePrint = useReactToPrint({
     documentTitle: "Print",
-    content: () => documentPrint.current,
+    content: () => componentRef.current,
   });
 
   return (
@@ -206,7 +206,7 @@ export function LoadingDataVacation() {
       )}
 
       <div
-        ref={documentPrint}
+        ref={componentRef}
         className="flex flex-row flex-wrap gap-4 justify-center items-center w-full h-full p-2"
       >
         {showListVacation.map((item, index) => (
