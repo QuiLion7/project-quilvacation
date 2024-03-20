@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# QuiLVacation
+
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`npx create-next-app@latest`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+These instructions will allow you to get a copy of the project up and running on your local machine for development and testing purposes.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Before you begin, you'll need to have installed on your machine:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js
+- npm (usually comes with Node.js)
+- Firebase project configured with Firestore and Authentication enabled
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Installation
 
-## Learn More
+1. Clone this repository to your local machine.
+2. Navigate to the project directory.
+3. Run the `npm install` command to install the project dependencies.
 
-To learn more about Next.js, take a look at the following resources:
+## Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Management of Vacation Plans:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Users can create, view, edit, and delete vacation plans.
+- Plan details include title, description, dates, locations, and participants.
 
-## Deploy on Vercel
+### Display of Vacation Plans:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Some vacation plan advertisements are displayed on the main application interface, and all of them are displayed on the offers page.
+- Users can view the details of each plan, including title, description, dates, locations, and participants.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### PDF Generation:
+
+- Users have the option to generate a PDF/print mode based on available vacation plans.
+- PDFs can be saved or shared as needed.
+
+### Form Validation:
+
+- The application implements client-side form validation to ensure that all required fields are filled in correctly.
+
+### Responsive Design:
+
+- The interface is developed with a responsive design, providing a consistent experience on mobile and desktop devices.
+
+## User Access
+
+QuiLVacation offers different functionalities based on the type of user:
+
+### Advertiser User:
+
+- Can create, view, edit, and delete items for vacation planning.
+- Has full control over plan details, including title, description, and date.
+
+### Customer User:
+
+- Can view all available vacation plans on the platform.
+- Cannot create or edit plans, only view and select them for future booking.
+
+## Running the Tests
+
+There are no automated tests available in this project at the moment.
+
+## Deployment
+
+To deploy this project to an active system, you will need a server capable of hosting Next.js applications. Refer to the Next.js documentation for more information on deployment.
+
+## Built With
+
+- Next.js
+- React.js
+- NextAuth
+- Firestore (Firebase)
+- Tailwind CSS
+- Git
+
+## Author
+
+- **QuiLion Oliveira** - _Developer_ - [QuiLion Oliveira](https://github.com/QuiLion7)
+
+## License
+
+This project is licensed under the (your license) - see the [LICENSE.md](https://github.com/your-username/project/license) file for details.
+
+## Acknowledgments
+
+- Tell others about this project 📢;
+- Invite a team member for an açaí 🍧;
+- Publicly thank someone 🫂;
+- etc.
+
+---
+
+⌨️ with ❤️ by [QuiLion Oliveira](https://github.com/QuiLion7) 😊
