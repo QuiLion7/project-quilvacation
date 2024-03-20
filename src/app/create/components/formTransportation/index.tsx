@@ -86,15 +86,19 @@ type TransportYear = {
 };
 
 const profileFormSchema = z.object({
-  type: z.string().min(1, { message: "Escolha o tipo de transporte" }),
-  brand: z.string().min(1, { message: "Escolha a marca do transporte" }),
-  model: z.string().min(1, { message: "Escolha o modelo do transporte" }),
-  year: z.string().min(1, { message: "Escolha o ano do transporte" }),
+  type: z.string().min(1, { message: "Choose the type of transportation" }),
+  brand: z
+    .string()
+    .min(1, { message: "Choose the brand of the transportation" }),
+  model: z
+    .string()
+    .min(1, { message: "Choose the model of the transportation" }),
+  year: z.string().min(1, { message: "Choose the year of the transportation" }),
   photos: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one service.",
   }),
   description: z.string().max(300, { message: "Maximum 300 characters" }),
-  price: z.string().min(1, { message: "Informe o preço" }),
+  price: z.string().min(1, { message: "Enter the price" }),
   dateRange: z.object({
     from: z.date(),
     to: z.date(),
