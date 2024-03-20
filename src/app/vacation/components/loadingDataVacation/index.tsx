@@ -1,6 +1,6 @@
 "use client";
 
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import {
   collection,
   query,
@@ -8,29 +8,28 @@ import {
   orderBy,
   where,
   doc,
-  deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { format } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { ScanSearch, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { UserIDProps } from "@/lib/auth";
-import { deleteObject, ref } from "firebase/storage";
-import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
+import { useReactToPrint } from "react-to-print";
 
-interface ListVacationProps {
-  id: string;
+interface ItemTransportationProps {
   type: string;
-  establishmentName: string;
-  price: string | number;
-  servicesIncluded: string[];
+  brand: string;
+  model: string;
+  year: string;
+  id: string;
   photos: ListImageProps[];
   description: string;
+  price: string | number;
   dateRange: {
     from: TimestampProps;
     to: TimestampProps;
@@ -39,6 +38,29 @@ interface ListVacationProps {
   city: string;
   address: string;
   whatsapp: string;
+  created: string;
+  owner: string;
+  uid: string;
+  createType: string;
+}
+
+interface ItemAccommodationProps {
+  type: string;
+  establishmentName: string;
+  servicesIncluded: string[];
+  id: string;
+  photos: ListImageProps[];
+  description: string;
+  price: string | number;
+  dateRange: {
+    from: TimestampProps;
+    to: TimestampProps;
+  };
+  state: string;
+  city: string;
+  address: string;
+  whatsapp: string;
+  created: string;
   owner: string;
   uid: string;
   createType: string;
@@ -60,15 +82,21 @@ interface TimestampProps {
   nanoseconds: number;
 }
 
+type ManageItem = ItemTransportationProps | ItemAccommodationProps;
+
 export function LoadingDataVacation() {
   const { data } = useSession();
   const user: UserIDProps | undefined = data?.user;
   const userID = user?.id;
 
   const [listVacation, setListVacation] = useState<ItemVacationProps[]>([]);
+  const [showListVacation, setShowListVacation] = useState<ManageItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const documentPrint: RefObject<HTMLDivElement> = useRef(null);
 
   useEffect(() => {
-    const loadList = async () => {
+    const loadListVacation = async () => {
       if (!userID) {
         console.error("User ID not found.");
         return;
@@ -82,54 +110,79 @@ export function LoadingDataVacation() {
         );
         const snapshot = await getDocs(queryRef);
 
-        let listManage = [] as ItemVacationProps[];
+        let listVacation = [] as ItemVacationProps[];
 
         snapshot.forEach((doc) => {
-          listManage.push({
-            id: doc.id,
-            uid: doc.data().uid,
-          });
+          const data = doc.data();
+          if (data && data.id) {
+            listVacation.push({
+              id: data.id,
+              uid: data.uid,
+            });
+          } else {
+            console.error("Invalid ID found in document:", doc.id);
+          }
         });
-        console.log(listManage);
-        setListVacation(listManage);
+        setListVacation(listVacation);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error when searching for item:", error);
         toast.error("Error when searching for item");
+        setIsLoading(false);
+      }
+    };
+    loadListVacation();
+  }, [userID]);
+
+  useEffect(() => {
+    const loadListManage = async () => {
+      try {
+        const ids = listVacation.map((item) => item.id);
+
+        let listManage = [] as ManageItem[];
+
+        const promises = ids.map(async (id) => {
+          const docRef = doc(db, "manage", id);
+          const docSnapshot = await getDoc(docRef);
+          if (docSnapshot.exists()) {
+            listManage.push(docSnapshot.data() as ManageItem);
+          }
+        });
+
+        await Promise.all(promises);
+
+        setShowListVacation(listManage);
+      } catch (error) {
+        console.error("Error when searching for manage items:", error);
+        toast.error("Error when searching for manage items");
       }
     };
 
-    loadList();
-  }, [userID]);
+    if (listVacation.length > 0) {
+      loadListManage();
+    }
+  }, [listVacation]);
 
   function timestampToDate(timestamp: TimestampProps) {
     const date = new Date(timestamp.seconds * 1000);
     return date;
   }
 
-  async function handleDeleteItem(establishment: ListVacationProps) {
-    const docRef = doc(db, "manage", establishment.id);
-
-    establishment.photos.map(async (photo) => {
-      const imagePath = `images/${photo.uid}/${photo.name}`;
-      const imageRef = ref(storage, imagePath);
-
-      try {
-        await deleteDoc(docRef);
-        await deleteObject(imageRef);
-        setListVacation(
-          listVacation.filter((item) => item.id !== establishment.id)
-        );
-        toast.success("Deleted Item");
-      } catch (error) {
-        console.error("Error delete:", error);
-        toast.error("Error delete");
-      }
-    });
-  }
+  const handlePrint = useReactToPrint({
+    documentTitle: "Print",
+    content: () => documentPrint.current,
+  });
 
   return (
-    <main className="w-full flex flex-col justify-center items-center">
-      {listVacation.length === 0 && (
+    <main className="w-full h-full flex flex-col justify-center items-center">
+      {isLoading && (
+        <div className="w-full h-[65vh] uppercase flex flex-col justify-center items-center text-primary">
+          <h1 className="font-bold text-base sm:text-lg md:text-xl lg:text-2xl">
+            Loading...
+          </h1>
+        </div>
+      )}
+      {!isLoading && listVacation.length === 0 && (
         <div className="w-full h-[65vh] uppercase flex flex-col justify-center items-center text-primary">
           <h1 className="font-bold text-base sm:text-lg md:text-xl lg:text-2xl">
             no offers registered
@@ -139,79 +192,97 @@ export function LoadingDataVacation() {
           </h3>
         </div>
       )}
-      {listVacation.length > 0 && (
-        <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
-          to manage
-        </h1>
+      {!isLoading && listVacation.length > 0 && (
+        <div className=" flex flex-col justify-center items-center w-full">
+          <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5">
+            to manage
+          </h1>
+          <div className="flex justify-end items-center w-full">
+            <Button className="right-2 uppercase" onClick={handlePrint}>
+              print page
+            </Button>
+          </div>
+        </div>
       )}
 
-      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-auto">
-        {listVacation.map((item) => (
-          <Card
-            key={item.id}
-            className="rounded-xl bg-primary/80 hover:bg-primary duration-300 w-full h-full"
+      <div
+        ref={documentPrint}
+        className="flex flex-row flex-wrap gap-4 justify-center items-center w-full h-full p-2"
+      >
+        {showListVacation.map((item, index) => (
+          <div
+            key={index}
+            className="group flex w-full h-full md:max-h-[200px] flex-col sm:flex-row gap-2 bg-primary/80 hover:bg-primary/90 duration-300 rounded-xl p-2 text-secondary"
           >
-            <CardContent className="relative group flex flex-col w-[300px] h-[350px] sm:w-[220px] sm:h-[340px] md:w-[240px] md:h-[360px] aspect-square items-center justify-center rounded-xl text-secondary p-0 ">
-              <div className="flex justify-center items-center w-full  h-full rounded-xl">
-                <Button
-                  className="absolute z-10 top-0 right-[-8px] bg-transparent hover:bg-primary/0 duration-300 w-auto h-auto flex justify-center items-center drop-shadow"
-                  onClick={() => handleDeleteItem(item)}
+            <div className="flex justify-center items-center ">
+              <div className="w-full flex justify-center items-center relative">
+                {/* <Button
+                  className="absolute z-10 top-[-7px] left-[-15px] bg-transparent hover:bg-primary/0 duration-300 w-auto h-auto flex justify-center items-center drop-shadow"
+                  onClick={() => console.log(item.id)}
                 >
-                  <Trash2 className="text-primary bg-secondary p-1 rounded-xl w-[30px] h-auto cursor-pointer hover:scale-110 duration-300" />
-                </Button>
-                <Link href={`/offers/${item.id}`}>
-                  <Image
-                    src={item.photos[0].url}
-                    alt={item.createType}
-                    layout="responsive"
-                    quality={100}
-                    unoptimized={true}
-                    width={0}
-                    height={0}
-                    style={{
-                      height: "200px",
-                      width: "300px",
-                      objectFit: "cover",
-                    }}
-                    className="center w-auto h-full object-cover rounded-xl group-hover:scale-95 duration-300 cursor-pointer"
-                  />
-                </Link>
+                  <X className="text-primary bg-secondary p-1 rounded-xl w-[35px] h-auto cursor-pointer hover:scale-110 duration-300" />
+                </Button> */}
+                <Image
+                  src={item.photos[0].url}
+                  alt={item.createType}
+                  layout="fixed"
+                  quality={100}
+                  unoptimized={true}
+                  width={0}
+                  height={0}
+                  style={{
+                    height: "180px",
+                    width: "400px",
+                    objectFit: "cover",
+                  }}
+                  className="center w-full h-full object-cover object-center rounded-xl group-hover:scale-[102%] duration-300"
+                />
               </div>
-              <div className="flex text-sm md:text-base flex-col gap-1 justify-center items-center p-2 w-full sm:w-full h-full uppercase group-hover:scale-105 duration-300">
-                <p className="hidden sm:block font-bold text-center">
-                  {item.createType}
-                </p>
-                <p className="cursor-default text-center">{item.type}</p>
-                <span className="cursor-default text-center">
-                  {item.city} / {item.state}
-                </span>
-                <span className="cursor-default hover:scale-105 duration-300">
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2 uppercase w-full">
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                Type: {""} {item?.createType}
+              </div>
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                <span>
                   from:{" "}
-                  {format(timestampToDate(item.dateRange.from), "MM/dd/yyyy")}
-                </span>
-                <span className="cursor-default hover:scale-105 duration-300">
-                  to: {format(timestampToDate(item.dateRange.to), "MM/dd/yyyy")}
-                </span>
-                <span className="cursor-default font-bold">
-                  Price: $ {item.price}
+                  {format(timestampToDate(item?.dateRange.from), "MM/dd/yyyy")}{" "}
                 </span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                <span>
+                  to:{" "}
+                  {format(timestampToDate(item?.dateRange.to), "MM/dd/yyyy")}
+                </span>
+              </div>
+              <div className="col-span-3 gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                Description: {""}
+                {item?.description}
+              </div>
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                Address: {""} {item?.city}/{item?.state}
+              </div>
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                Price: {""} $ {item?.price}
+              </div>
+              <div className="gap-1 cursor-default p-1 flex justify-center items-center border border-secondary rounded-xl text-center w-full text-[0.7rem] sm:text-xs md:text-sm hover:bg-primary hover:scale-[101%] duration-300">
+                WhatsApp: {""} {item?.whatsapp}
+              </div>
+            </div>
+          </div>
         ))}
-
-        <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </div> */}
+      </div>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </main>
   );
 }
