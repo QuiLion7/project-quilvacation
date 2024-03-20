@@ -165,7 +165,12 @@ export function ShowOffers() {
     }
 
     try {
-      addDoc(collection(db, "vacation"), {
+      if (!item) {
+        console.error("Item ID is missing or invalid:", item);
+        return;
+      }
+
+      await addDoc(collection(db, "vacation"), {
         id: item,
         uid: userID,
         created: new Date(),
