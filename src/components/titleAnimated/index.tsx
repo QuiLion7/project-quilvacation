@@ -7,20 +7,13 @@ const TitleAnimation = () => {
       <div className="flex flex-col gap-2 justify-center items-center w-full   h-[30%] sm:flex-1 p-4">
         <h1 className="font-bold text-secondary text-center text-lg sm:text-xl md:text-3xl lg:text-4xl uppercase duration-500 tracking-wide cursor-default">
           <TypeAnimation
-            sequence={[
-              "Creating you",
-              2000,
-              "Planning you",
-              2000,
-              "Realizing",
-              2000,
-            ]}
+            sequence={["Creating", 2000, "Planning", 2000, "Realizing", 2000]}
             speed={20}
             className="text-secondary"
             wrapper="span"
             repeat={Infinity}
           />
-          Dream Vacations in 2024!
+          Your Dream Vacations in 2024!
         </h1>
         <h3 className="font-bold text-center text-xs text-secondary sm:text-base md:text-lg lg:text-2xl uppercase hover:scale-105 tracking-wide cursor-default shadow-2xl">
           Escaping to Dream Vacations in 2024
