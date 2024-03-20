@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   CircleDollarSign,
-  FileCog,
   LogInIcon,
   LogOutIcon,
   MenuIcon,
