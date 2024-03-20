@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import UserType from "@/components/userType";
 import { UserContext } from "@/contexts/UserContext";
-import { fadeIn } from "@/utils/variants";
 import { HoverCard } from "@radix-ui/react-hover-card";
-import { motion } from "framer-motion";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,28 +25,16 @@ const NavDesktop = () => {
         href="/"
         className="h-[45px] w-full flex justify-start items-center"
       >
-        <motion.h1
-          variants={fadeIn("left", 0.7)}
-          initial="hidden"
-          whileInView={"show"}
-          viewport={{ once: false, amount: 0.7 }}
-          className="font-bold text-sm md:text-xl lg:text-2xl xl:text-3xl"
-        >
+        <h1 className="font-bold text-sm md:text-xl lg:text-2xl xl:text-3xl">
           QUIL
           <span className="bg-gradient-to-r from-purple-900 to-indigo-500 bg-clip-text text-transparent">
             VACATION
           </span>
-        </motion.h1>
+        </h1>
       </Link>
 
       {status === "authenticated" && userType === "client" && (
-        <motion.ul
-          variants={fadeIn("right", 0.4)}
-          initial="hidden"
-          whileInView={"show"}
-          viewport={{ once: false, amount: 0.7 }}
-          className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase"
-        >
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
           <li
             className={`${
               pathname === "/"
@@ -120,17 +106,11 @@ const NavDesktop = () => {
               click to logout
             </HoverCardContent>
           </HoverCard>
-        </motion.ul>
+        </ul>
       )}
 
       {status === "authenticated" && userType === "advertiser" && (
-        <motion.ul
-          variants={fadeIn("right", 0.4)}
-          initial="hidden"
-          whileInView={"show"}
-          viewport={{ once: false, amount: 0.7 }}
-          className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase"
-        >
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
           <li
             className={`${
               pathname === "/"
@@ -202,17 +182,11 @@ const NavDesktop = () => {
               click to logout
             </HoverCardContent>
           </HoverCard>
-        </motion.ul>
+        </ul>
       )}
 
       {status === "unauthenticated" && (
-        <motion.ul
-          variants={fadeIn("right", 0.4)}
-          initial="hidden"
-          whileInView={"show"}
-          viewport={{ once: false, amount: 0.7 }}
-          className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase"
-        >
+        <ul className="flex flex-1 h-[45px] w-full items-center justify-end gap-3 text-sm uppercase">
           <li
             className={`${
               pathname === "/"
@@ -247,7 +221,7 @@ const NavDesktop = () => {
           >
             Login
           </Button>
-        </motion.ul>
+        </ul>
       )}
     </div>
   );

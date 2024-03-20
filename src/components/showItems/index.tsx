@@ -15,8 +15,6 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
-import { motion } from "framer-motion";
-import { fadeIn } from "@/utils/variants";
 
 interface ListProps {
   id: string;
@@ -94,22 +92,10 @@ export function ShowItems() {
 
   return (
     <main className=" sm:px-[50px] w-full flex justify-center items-center flex-col">
-      <motion.h1
-        variants={fadeIn("up", 0.4)}
-        initial="hidden"
-        whileInView={"show"}
-        viewport={{ once: false, amount: 0.5 }}
-        className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5 bg-blend-exclusion"
-      >
+      <h1 className="uppercase font-bold text-sm sm:text-base md:text-lg lg:text-2xl my-5 bg-blend-exclusion">
         Most accessed
-      </motion.h1>
-      <motion.section
-        className="w-full h-full flex justify-center items-center"
-        variants={fadeIn("up", 0.2)}
-        initial="hidden"
-        whileInView={"show"}
-        viewport={{ once: false, amount: 0.4 }}
-      >
+      </h1>
+      <section className="w-full h-full flex justify-center items-center">
         <Carousel
           opts={{
             align: "start",
@@ -162,7 +148,7 @@ export function ShowItems() {
           <CarouselPrevious className="hidden sm:flex" />
           <CarouselNext className="hidden sm:flex" />
         </Carousel>
-      </motion.section>
+      </section>
 
       <ToastContainer
         position="bottom-right"
