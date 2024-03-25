@@ -49,9 +49,9 @@ import {
   deleteObject,
 } from "firebase/storage";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DayPicker } from "react-day-picker";
 
 type IBGEUFResponse = {
   sigla: string;
@@ -105,6 +105,8 @@ export default function FormAccommodation({
   const [cities, setCities] = useState<IBGECITYResponse[]>([]);
   const [selectedUf, setSelectedUf] = useState("0");
   const [selectedCity, setSelectedCity] = useState("0");
+
+  const today = new Date();
 
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 0, 20),
@@ -513,6 +515,13 @@ export default function FormAccommodation({
                               mode="range"
                               defaultMonth={date?.from}
                               selected={date}
+                              onDayClick={(date) => {
+                                form.setValue("dateRange", {
+                                  from: date,
+                                  to: date,
+                                });
+                              }}
+                              disabled={{ before: today }}
                               onSelect={(selectedDate) => {
                                 setDate(selectedDate);
                                 field.onChange(selectedDate);
